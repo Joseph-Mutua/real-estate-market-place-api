@@ -18,7 +18,7 @@ export const uploadImage = async (req, res) => {
 
     // image params
     const params = {
-      Bucket: "realist-app-udemy-course-bucket",
+      Bucket: "realstate-markeplace",
       Key: `${nanoid()}.${type}`,
       Body: base64Image,
       ACL: "public-read",
@@ -31,7 +31,7 @@ export const uploadImage = async (req, res) => {
         console.log(err);
         res.sendStatus(400);
       } else {
-        // console.log(data);
+    // console.log("IMAGE UPLOAD RES", data)
         res.send(data);
       }
     });
