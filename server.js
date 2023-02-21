@@ -7,8 +7,6 @@ import { DATABASE } from "./config.js";
 import authRoutes from "./routes/auth.js";
 import adRoutes from "./routes/ad.js";
 
-//Sendgrid
-
 
 dotenv.config();
 
@@ -31,8 +29,6 @@ app.use(cors());
 app.use("/api", authRoutes);
 app.use("/api", adRoutes);
 
-
-//TRY out SENDGRID
 
 
 app.listen(port, () => console.log(`server_running_on_port ${port}`));
