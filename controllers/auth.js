@@ -6,6 +6,7 @@ import User from "../models/user.js";
 import Ad from "../models/ad.js";
 import { nanoid } from "nanoid";
 import validator from "email-validator";
+import sgMail from "@sendgrid/mail";
 
 const tokenAndUserResponse = (req, res, user) => {
   const token = jwt.sign({ _id: user._id }, config.JWT_SECRET, {
@@ -58,30 +59,57 @@ export const preRegister = async (req, res) => {
       expiresIn: "1h",
     });
 
-    config.AWSSES.sendEmail(
-      emailTemplate(
-        email,
-        `
+    // config.AWSSES.sendEmail(
+    //   emailTemplate(
+    //     email,
+    //     `
+    //   <p>Please click the link below to activate your account.</p>
+    //   <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate my account</a>
+    //   `,
+    //     config.REPLY_TO,
+    //     "Activate your acount"
+    //   ),
+    //   (err, data) => {
+    //     if (err) {
+    //       console.log(err);
+    //       return res.json({ ok: false });
+    //     } else {
+    //       console.log(data);
+    //       return res.json({ ok: true });
+    //     }
+    //   }
+    // );
+    sgMail.setApiKey(config.SENDGRID_API_KEY);
+    const msg = {
+      to: email, // Change to your recipient
+      from: "Mutuaj793@gmail.com", // Change to your verified sender
+      subject: "Welcome to Soko Mali",
+      text: `
       <p>Please click the link below to activate your account.</p>
       <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate my account</a>
       `,
-        config.REPLY_TO,
-        "Activate your acount"
-      ),
-      (err, data) => {
-        if (err) {
-          console.log(err);
-          return res.json({ ok: false });
-        } else {
-          console.log(data);
-          return res.json({ ok: true });
-        }
-      }
-    );
+      html: `
+      <p>Please click the link below to activate your account.</p>
+      <a href="${config.CLIENT_URL}/auth/account-activate/${token}">Activate my account</a>
+      `,
+    };
+    sgMail
+      .send(msg)
+      .then((res) => {
+        console.log("🚀 ~ file: server.js:48 ~ .then ~ res:", res);
+        return res.json({ ok: true });
+      })
+      .catch((error) => {
+        console.log("🚀 ~ file: server.js:52 ~ error:", error);
+
+        return res.json({ ok: false });
+      });
   } catch (err) {
     console.log(err);
     return res.json({ error: "Something went wrong. Try again." });
   }
+
+  //Sendgrid
 };
 
 export const register = async (req, res) => {
@@ -147,26 +175,51 @@ export const forgotPassword = async (req, res) => {
         expiresIn: "1h",
       });
 
-      config.AWSSES.sendEmail(
-        emailTemplate(
-          email,
-          `
+      // config.AWSSES.sendEmail(
+      //   emailTemplate(
+      //     email,
+      //     `
+      //     <p>Please click the link below to access your account.</p>
+      //     <a href="${config.CLIENT_URL}/auth/access-account/${token}">Access my account</a>
+      //   `,
+      //     config.REPLY_TO,
+      //     "Access your account"
+      //   ),
+      //   (err, data) => {
+      //     if (err) {
+      //       console.log(err);
+      //       return res.json({ ok: false });
+      //     } else {
+      //       console.log(data);
+      //       return res.json({ ok: true });
+      //     }
+      //   }
+      // );
+      sgMail.setApiKey(config.SENDGRID_API_KEY);
+      const msg = {
+        to: email, // Change to your recipient
+        from: "Mutuaj793@gmail.com", // Change to your verified sender
+        subject: "Welcome to Soko Mali",
+        text: `
           <p>Please click the link below to access your account.</p>
           <a href="${config.CLIENT_URL}/auth/access-account/${token}">Access my account</a>
         `,
-          config.REPLY_TO,
-          "Access your account"
-        ),
-        (err, data) => {
-          if (err) {
-            console.log(err);
-            return res.json({ ok: false });
-          } else {
-            console.log(data);
-            return res.json({ ok: true });
-          }
-        }
-      );
+        html: `
+          <p>Please click the link below to access your account.</p>
+          <a href="${config.CLIENT_URL}/auth/access-account/${token}">Access my account</a>
+        `,
+      };
+      sgMail
+        .send(msg)
+        .then((res) => {
+          console.log("🚀 ~ file: server.js:48 ~ .then ~ res:", res);
+          return res.json({ ok: true });
+        })
+        .catch((error) => {
+          console.log("🚀 ~ file: server.js:52 ~ error:", error);
+
+          return res.json({ ok: false });
+        });
     }
   } catch (err) {
     console.log(err);
